@@ -9,6 +9,7 @@ TagManager:
   - ScoreSubtract
   - JumpBooster
   - SpeedBooster
+  - Ground
   layers:
   - Default
   - TransparentFX
