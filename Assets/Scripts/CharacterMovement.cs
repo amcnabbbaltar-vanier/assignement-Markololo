@@ -37,7 +37,6 @@ public class CharacterMovement : MonoBehaviour
     private float moveZ; // Stores vertical movement input (W/S or Up/Down Arrow)
     private bool jumpRequest; // Flag to check if the player requested a jump
     private Vector3 moveDirection; // Stores the calculated movement direction
-    int score = 0;
     private Text scoreText;
     
     // Boosters Variables:
@@ -123,7 +122,16 @@ public class CharacterMovement : MonoBehaviour
         // Register a jump request if the player presses the Jump button
         if (Input.GetButtonDown("Jump"))
         {
-            jumpRequest = true;
+            if (IsGrounded)
+            {
+                jumpRequest = true;
+                didDoubleJump = false;
+            }
+            else if (isJumpBoosted && !didDoubleJump)
+            {
+                doubleJumpRequested = true;
+                didDoubleJump = true;
+            }
         }
     }
 
@@ -179,6 +187,12 @@ public class CharacterMovement : MonoBehaviour
         {
             rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse); // Apply force upwards
             jumpRequest = false; // Reset jump request after applying jump
+        }
+
+        if (doubleJumpRequested)
+        {
+            rb.AddForce(Vector3.up * jumpBoostForce, ForceMode.Impulse); // Apply double jump force
+            doubleJumpRequested = false; // Reset double jump request after applying boost
         }
     }
 
@@ -255,9 +269,18 @@ public class CharacterMovement : MonoBehaviour
         * The actual implementation of applying jump and speed boosts will be added according to the instructions,
         * depending if it is to add or subtract points.
         ***/
-    public void UpdateScoreDisplay()
+    private void OnCollisionEnter(Collision other)
     {
-        scoreText.text = "Points: " + GameManager.Instance.score;
+        BoostersPickupController boostManager = other.gameObject.GetComponent<BoostersPickupController>();
+        if (boostManager != null)
+        {
+            boostManager.GotHit(this);//pass script reference to use the method actions
+        }
+    //Omg this is getting so tangled, comment comment commentttt (line to remove)
+    }
+    public void UpdateScoreText()
+    {
+        scoreText.text = "Points: " + GameManager.Instance.Score;
     }
 
     public void BoostSpeed()

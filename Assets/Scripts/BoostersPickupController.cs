@@ -23,31 +23,53 @@ public class BoostersPickupController : MonoBehaviour
         transform.Rotate(Vector3.up, 50f * Time.deltaTime);
     }
 
-    public void GotHit()
+    // Method for when the player collides with a pickup 
+    // (refence to CharacterMovement script for actions)
+    public void GotHit(CharacterMovement character)
     {
         pickupEffect.Play();
         pickupSound.Play();
         
         if(this.tag == "ScoreAdd")
         {
-            GameManager.Instance.score += 50;
-            
+            GameManager.Instance.Score += 50;
+            character.UpdateScoreText();
+            gameObject.SetActive(false); 
         }
         if(this.tag == "ScoreSubtract")
         {
-            //more code according to instructions
+            GameManager.Instance.Score --;
+            character.UpdateScoreText();
+            gameObject.SetActive(false); 
         }
         if(this.tag == "JumpBooster")
         {
-            // Increase jump force
-             // Reset jump force after 5 seconds
+            GetComponent<Renderer>().enabled = false;
+            GetComponent<Collider>().enabled = false;
+            character.BoostJump();
+            Invoke("ReviveBoost", 30);
+            // gameObject.SetActive(false);
+            
         }
         if(this.tag == "SpeedBooster")
         {
-            // Increase speed multiplier
-            // Invoke("ResetSpeedMultiplier", 5f); 
-            // Reset speed multiplier after 5 seconds
+            GetComponent<Renderer>().enabled = false;
+            GetComponent<Collider>().enabled = false;
+            character.BoostSpeed();
+            Invoke("ReviveBoost", 30);
+            // gameObject.SetActive(false); 
         }
     }
 
+/*
+When you touch the SpeedBoost pickup and Jump boost 
+it should make the pickup should disappear and disable the collision  
+and it should reappear 30 seconds later.
+--> disable/enable collider and renderer, no need to destroy and remake the object
+*/
+    private void ReviveBoost()
+    {
+        GetComponent<Renderer>().enabled = true;
+        GetComponent<Collider>().enabled = true;
+    }
 }

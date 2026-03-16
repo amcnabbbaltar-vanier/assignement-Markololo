@@ -44,10 +44,12 @@ public class PauseMenuController : MonoBehaviour
     {
         // Application.Quit();
         // For a Main Menu scene:
+        GameManager.Instance.ResetGame();
         SceneManager.LoadScene("Scenes/MainMenuScene");
     }
     public void RestartGame()
     {
+        GameManager.Instance.ResetGame();
         SceneManager.LoadScene("Scenes/SampleScene");
     }
 }
