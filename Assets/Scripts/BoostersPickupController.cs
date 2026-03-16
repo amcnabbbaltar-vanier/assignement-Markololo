@@ -47,7 +47,11 @@ public class BoostersPickupController : MonoBehaviour
         }
         if(this.tag == "ScoreSubtract")
         {
-            GameManager.Instance.Score --;
+            if (GameManager.Instance.LivePoints <= 1)
+            {
+                GameManager.Instance.ResetGame();
+            }
+            GameManager.Instance.LivePoints --;
             character.UpdateScoreText();
             gameObject.SetActive(false); 
         }

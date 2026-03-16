@@ -5,6 +5,7 @@ using Cinemachine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
+
 [RequireComponent(typeof(Rigidbody))] // Ensures that a Rigidbody component is attached to the GameObject
 public class CharacterMovement : MonoBehaviour
 {
@@ -271,11 +272,21 @@ public class CharacterMovement : MonoBehaviour
         ***/
     private void OnCollisionEnter(Collision other)
     {
-        BoostersPickupController boostManager = other.gameObject.GetComponent<BoostersPickupController>();
-        if (boostManager != null)
+            // Debug.Log("Collision detected with: " + other.gameObject.name);
+
+        // if(other.gameObject.tag == "DeathPlane")
+        // {
+        //     GameManager.Instance.ResetGame();
+        // } this is now in levels manager script
+        if(other.gameObject.tag == "ScoreAdd" || other.gameObject.tag == "ScoreSubtract" || other.gameObject.tag == "JumpBooster" || other.gameObject.tag == "SpeedBooster")
         {
-            boostManager.GotHit(this);//pass script reference to use the method actions
+            BoostersPickupController boostManager = other.gameObject.GetComponent<BoostersPickupController>();
+            if (boostManager != null)
+            {
+                boostManager.GotHit(this);//pass script reference to use the method actions
+            }
         }
+        
     //Omg this is getting so tangled, comment comment commentttt (line to remove)
     }
     public void UpdateScoreText()

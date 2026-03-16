@@ -10,6 +10,7 @@ TagManager:
   - JumpBooster
   - SpeedBooster
   - Ground
+  - DeathPlane
   layers:
   - Default
   - TransparentFX
