@@ -52,7 +52,7 @@ public class BoostersPickupController : MonoBehaviour
                 GameManager.Instance.ResetGame();
             }
             GameManager.Instance.LivePoints --;
-            character.UpdateScoreText();
+            character.UpdateLivePointsText();
             gameObject.SetActive(false); 
         }
         if(this.tag == "JumpBooster")

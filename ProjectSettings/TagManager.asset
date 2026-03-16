@@ -11,6 +11,10 @@ TagManager:
   - SpeedBooster
   - Ground
   - DeathPlane
+  - Level1_pass
+  - Level2_pass
+  - Level3_pass
+  - Points
   layers:
   - Default
   - TransparentFX

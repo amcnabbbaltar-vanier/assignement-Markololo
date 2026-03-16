@@ -39,6 +39,7 @@ public class CharacterMovement : MonoBehaviour
     private bool jumpRequest; // Flag to check if the player requested a jump
     private Vector3 moveDirection; // Stores the calculated movement direction
     private Text scoreText;
+    private Text livePointsText;
     
     // Boosters Variables:
     private bool isJumpBoosted = false;
@@ -100,6 +101,7 @@ public class CharacterMovement : MonoBehaviour
         rb.freezeRotation = true; // Prevent Rigidbody from rotating due to physics interactions
         rb.interpolation = RigidbodyInterpolation.Interpolate; // Smooth physics interpolation
         scoreText = GameObject.FindWithTag("Score").GetComponent<Text>();
+        livePointsText = GameObject.FindWithTag("Points").GetComponent<Text>();
 
         // Assign the main camera if available
         if (Camera.main)
@@ -231,8 +233,6 @@ public class CharacterMovement : MonoBehaviour
 
         // Apply the new velocity directly
         rb.linearVelocity = newVelocity;
-        Debug.Log(IsGrounded);
-        Debug.DrawRay(transform.position, Vector3.down * 2f, Color.red);
     }
 
     // private void OnCollisionEnter(Collision other)
@@ -272,12 +272,34 @@ public class CharacterMovement : MonoBehaviour
         ***/
     private void OnCollisionEnter(Collision other)
     {
-            // Debug.Log("Collision detected with: " + other.gameObject.name);
+        // Debug.Log("Collision detected with: " + other.gameObject.name);
 
+        // Debug.Log("Collision detected with: " + other.gameObject.name);
         // if(other.gameObject.tag == "DeathPlane")
         // {
         //     GameManager.Instance.ResetGame();
         // } this is now in levels manager script
+        if (other.gameObject.CompareTag("DeathPlane"))
+        {
+            GameManager.Instance.ResetGame(); 
+        }
+
+        if (other.gameObject.CompareTag("Level1_pass"))
+        {
+            SceneManager.LoadScene("Scenes/Level2Scene");
+            UpdateScoreText();
+            UpdateLivePointsText();
+        }
+        if (other.gameObject.CompareTag("Level2_pass"))
+        {
+            SceneManager.LoadScene("Scenes/Level3Scene");
+            UpdateScoreText();
+            UpdateLivePointsText();
+        }
+        if (other.gameObject.CompareTag("Level3_pass"))
+        {
+            SceneManager.LoadScene("Scenes/endScene");
+        }
         if(other.gameObject.tag == "ScoreAdd" || other.gameObject.tag == "ScoreSubtract" || other.gameObject.tag == "JumpBooster" || other.gameObject.tag == "SpeedBooster")
         {
             BoostersPickupController boostManager = other.gameObject.GetComponent<BoostersPickupController>();
@@ -291,7 +313,12 @@ public class CharacterMovement : MonoBehaviour
     }
     public void UpdateScoreText()
     {
-        scoreText.text = "Points: " + GameManager.Instance.Score;
+        scoreText.text = "Score: " + GameManager.Instance.Score;
+    }
+
+    public void UpdateLivePointsText()
+    {
+        livePointsText.text = "Lives: " + GameManager.Instance.LivePoints;
     }
 
     public void BoostSpeed()
