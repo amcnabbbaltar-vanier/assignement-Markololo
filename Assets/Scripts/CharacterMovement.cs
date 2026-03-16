@@ -1,54 +1,3 @@
-// using System.Collections;
-// using System.Collections.Generic;
-// using UnityEngine;
-// using UnityEngine.Pool;
-// using UnityEngine.UI;
-// using UnityEngine.SceneManagement;
-
-// public class CharacterMovement : MonoBehaviour
-// {
-//     Rigidbody rb;
-//     // Vector3 movement = new Vector3(1.0f, 0.0f, 0.0f);
-//     float speed = 10f;
-//     float jumpForce = 10f;
-//     int score = 0;
-//     private Text scoreText;
-//     float hosrizontalInput;
-//     void Start()
-//     {
-//         rb = GetComponent<Rigidbody>();
-//     int score = 0;
-//     private Text scoreText;
-//         scoreText = GameObject.FindWithTag("Score").GetComponent<Text>();
-//     }
-
-//     void Update()
-//     {
-//         hosrizontalInput = Input.GetAxis("Horizontal");
-
-//         if(Input.GetKeyDown(KeyCode.W))
-//         {
-//             rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
-//         }
-//     }
-
-//     void FixedUpdate()
-//     {
-//         Vector3 move = transform.position + hosrizontalInput * Time.deltaTime * speed * Vector3.right;
-//         rb.MovePosition(move);
-//      }
-
-//     void OnCollisionEnter(Collision other)
-//     {
-//         if(other.gameObject.tag == "ScoreAdd")
-//         {
-//             //remove it from the scene
-//             score++;
-//             scoreText.text = "Points: " + score;
-//             other.gameObject.SetActive(false);
-//         }
-//     }
-// }
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -59,6 +8,12 @@ using UnityEngine.SceneManagement;
 [RequireComponent(typeof(Rigidbody))] // Ensures that a Rigidbody component is attached to the GameObject
 public class CharacterMovement : MonoBehaviour
 {
+    // ============================== Boosters Settings =================================
+    [Header("Boosters Settings")]
+    // [SerializeField] private float jumpBoostForce = 10f;    
+    [SerializeField] private float jumpBoostForce = 9f;    
+    [SerializeField] private float speedBoostMultiplier = 9f;    
+
     // ============================== Movement Settings ==============================
     [Header("Movement Settings")]
     [SerializeField] private float baseWalkSpeed = 5f;    // Base speed when walking
@@ -68,7 +23,7 @@ public class CharacterMovement : MonoBehaviour
     // ============================== Jump Settings =================================
     [Header("Jump Settings")]
     [SerializeField] private float jumpForce = 5f;        // Jump force applied to the character
-    [SerializeField] private float groundCheckDistance = 1.2f; // Distance to check for ground contact (Raycast)
+    [SerializeField] private float groundCheckDistance = 0.3f; // Distance to check for ground contact (Raycast)
 
     // ============================== Modifiable from other scripts ==================
     public float speedMultiplier = 1.0f; // Additional multiplier for character speed ( WINK WINK )
@@ -82,9 +37,14 @@ public class CharacterMovement : MonoBehaviour
     private float moveZ; // Stores vertical movement input (W/S or Up/Down Arrow)
     private bool jumpRequest; // Flag to check if the player requested a jump
     private Vector3 moveDirection; // Stores the calculated movement direction
-
     int score = 0;
     private Text scoreText;
+    
+    // Boosters Variables:
+    private bool isJumpBoosted = false;
+    private bool didDoubleJump = false; 
+    private bool doubleJumpRequested = false;
+
     // ============================== Animation Variables ==============================
     [Header("Anim values")]
     public float groundSpeed; // Speed value used for animations
@@ -260,14 +220,65 @@ public class CharacterMovement : MonoBehaviour
         Debug.DrawRay(transform.position, Vector3.down * 2f, Color.red);
     }
 
-    private void OnCollisionEnter(Collision other)
+    // private void OnCollisionEnter(Collision other)
+    // {
+    //     if(other.gameObject.tag == "ScoreAdd")
+    //     {
+    //         score += 50;
+    //         scoreText.text = "Points: " + score;
+    //         other.gameObject.SetActive(false);
+    //         //more code according to instructions
+    //     }
+    //     if(other.gameObject.tag == "ScoreSubtract")
+    //     {
+    //         score--;
+    //         scoreText.text = "Points: " + score;
+    //         other.gameObject.SetActive(false);
+    //         //more code according to instructions
+    //     }
+    //     if(other.gameObject.tag == "JumpBooster")
+    //     {
+    //         // Increase jump force
+    //          // Reset jump force after 5 seconds
+    //     }
+    //     if(other.gameObject.tag == "SpeedBooster")
+    //     {
+    //         // Increase speed multiplier
+    //         // Invoke("ResetSpeedMultiplier", 5f); 
+    //         // Reset speed multiplier after 5 seconds
+    //     }
+    // }
+    
+    /***
+        * This method is called by the BoostersPickupController when a booster is picked up.
+        * It updates the score display and applies the appropriate effects based on the booster type.
+        * The actual implementation of applying jump and speed boosts will be added according to the instructions,
+        * depending if it is to add or subtract points.
+        ***/
+    public void UpdateScoreDisplay()
     {
-        if(other.gameObject.tag == "ScoreAdd")
-        {
-            //remove it from the scene
-            score++;
-            scoreText.text = "Points: " + score;
-            other.gameObject.SetActive(false);
-        }
+        scoreText.text = "Points: " + GameManager.Instance.score;
+    }
+
+    public void BoostSpeed()
+    {
+        speedMultiplier = speedBoostMultiplier; // Apply speed boost multiplier
+        Invoke("ResetSpeedMultiplier", 5f); // Reset speed multiplier after 5 seconds
+    }
+    private void ResetSpeedMultiplier()
+    {
+        speedMultiplier = 1.0f;
+    }
+    public void BoostJump()
+    {
+        isJumpBoosted = true;
+        didDoubleJump = false; 
+        Invoke("ResetBoostJump", 30f); // Boost only 30 secs
+    }
+
+    public void ResetBoostJump()
+    {
+        isJumpBoosted = false;
+        didDoubleJump = false; 
     }
 }
