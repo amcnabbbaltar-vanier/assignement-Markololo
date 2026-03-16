@@ -71,6 +71,8 @@ public class CharacterMovement : MonoBehaviour
     private void Awake()
     {
         InitializeComponents(); // Initialize Rigidbody and Camera reference
+        UpdateScoreText();
+        UpdateLivePointsText();
     }
 
     /// <summary>
@@ -298,7 +300,7 @@ public class CharacterMovement : MonoBehaviour
         }
         if (other.gameObject.CompareTag("Level3_pass"))
         {
-            SceneManager.LoadScene("Scenes/endScene");
+            SceneManager.LoadScene("Scenes/EndScene");
         }
         if(other.gameObject.tag == "ScoreAdd" || other.gameObject.tag == "ScoreSubtract" || other.gameObject.tag == "JumpBooster" || other.gameObject.tag == "SpeedBooster")
         {

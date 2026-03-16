@@ -9,6 +9,7 @@ public class PauseMenuController : MonoBehaviour
 
     void Update()
     {
+        
         // Check if the player presses the "Escape" key (or any key you choose).
         if (Input.GetKeyDown(KeyCode.Escape))
         {
