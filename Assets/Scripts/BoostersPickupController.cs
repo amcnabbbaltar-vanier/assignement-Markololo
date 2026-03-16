@@ -33,7 +33,7 @@ public class BoostersPickupController : MonoBehaviour
         
         if(this.tag == "ScoreAdd" || this.tag == "ScoreSubtract" || this.tag == "JumpBooster" || this.tag == "SpeedBooster")
         {
-            Invoke("DeactivateObject", 0.5f); //Delay the deactivation to allow the effect and sound to play    
+            Invoke("DeactivateObject", 0.3f); //Delay the deactivation to allow the effect and sound to play    
         }
     }
 
