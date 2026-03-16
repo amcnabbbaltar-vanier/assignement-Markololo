@@ -5,7 +5,7 @@ public class BoostersPickupController : MonoBehaviour
 {
     private ParticleSystem pickupEffect; // Reference to the particle system for the pickup effect
     private AudioSource pickupSound; // Reference to the audio source for the pickup sound
-
+    private CharacterMovement character; 
     // public float hoveringHeihgt = 0.04f; //change it in game to see best result 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -25,11 +25,20 @@ public class BoostersPickupController : MonoBehaviour
 
     // Method for when the player collides with a pickup 
     // (refence to CharacterMovement script for actions)
-    public void GotHit(CharacterMovement character)
+    public void GotHit(CharacterMovement inputCharacter)
     {
+        character = inputCharacter;
         pickupEffect.Play();
         pickupSound.Play();
         
+        if(this.tag == "ScoreAdd" || this.tag == "ScoreSubtract" || this.tag == "JumpBooster" || this.tag == "SpeedBooster")
+        {
+            Invoke("DeactivateObject", 0.5f); //Delay the deactivation to allow the effect and sound to play    
+        }
+    }
+
+    private void DeactivateObject()
+    {
         if(this.tag == "ScoreAdd")
         {
             GameManager.Instance.Score += 50;
