@@ -15,6 +15,7 @@ TagManager:
   - Level2_pass
   - Level3_pass
   - Points
+  - Timer
   layers:
   - Default
   - TransparentFX

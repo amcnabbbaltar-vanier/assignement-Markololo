@@ -25,6 +25,8 @@ public class CharacterMovement : MonoBehaviour
     [Header("Jump Settings")]
     [SerializeField] private float jumpForce = 5f;        // Jump force applied to the character
     [SerializeField] private float groundCheckDistance = 0.3f; // Distance to check for ground contact (Raycast)
+    private float jumpHoldTime = 0f;
+    private bool isHoldingJump = false;
 
     // ============================== Modifiable from other scripts ==================
     public float speedMultiplier = 1.0f; // Additional multiplier for character speed ( WINK WINK )
@@ -32,7 +34,10 @@ public class CharacterMovement : MonoBehaviour
     // ============================== Private Variables ==============================
     private Rigidbody rb; // Reference to the Rigidbody component
     private Transform cameraTransform; // Reference to the camera's transform
-
+    // public bool IsMoving = moveDirection.sqrMagnitude > 0.01f ? true : false;
+    // public bool IsJumpBoosted = isJumpBoosted ? true : false;
+    public bool IsMoving => moveDirection.sqrMagnitude > 0.01f;
+    public bool IsJumpBoosted => isJumpBoosted;
     // Input variables
     private float moveX; // Stores horizontal movement input (A/D or Left/Right Arrow)
     private float moveZ; // Stores vertical movement input (W/S or Up/Down Arrow)
@@ -81,6 +86,7 @@ public class CharacterMovement : MonoBehaviour
     private void Update()
     {
         RegisterInput(); // Collect player input
+        UpdateTimerText();
     }
 
     /// <summary>
@@ -125,11 +131,12 @@ public class CharacterMovement : MonoBehaviour
         moveZ = Input.GetAxis("Vertical");   // Get vertical movement input
 
         // Register a jump request if the player presses the Jump button
-        if (Input.GetButtonDown("Jump"))
+        if (Input.GetButtonDown("Jump")) 
         {
             if (IsGrounded)
             {
-                jumpRequest = true;
+                isHoldingJump = true;
+                jumpHoldTime = 0f;
                 didDoubleJump = false;
             }
             else if (isJumpBoosted && !didDoubleJump)
@@ -137,6 +144,24 @@ public class CharacterMovement : MonoBehaviour
                 doubleJumpRequested = true;
                 didDoubleJump = true;
             }
+        }
+        
+        if (Input.GetButton("Jump") && isHoldingJump)
+        {
+            jumpHoldTime += Time.deltaTime; //accumulate holding time
+
+            if (jumpHoldTime >= 3f) //make 3 secs
+            {
+                jumpRequest = true;
+                isHoldingJump = false;
+            }
+        }
+
+        if (Input.GetButtonUp("Jump") && isHoldingJump)
+        {
+            //we got to this part without resetting, so less than 3 secs
+            jumpRequest = true;
+            isHoldingJump = false;
         }
     }
 
@@ -190,8 +215,10 @@ public class CharacterMovement : MonoBehaviour
         // Apply jump force only if jump was requested and the character is grounded
         if (jumpRequest && IsGrounded)
         {
-            rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse); // Apply force upwards
-            jumpRequest = false; // Reset jump request after applying jump
+            float newjumpForce = jumpForce + jumpHoldTime * 2f; //the more u hold, the stronger
+            rb.AddForce(Vector3.up * newjumpForce, ForceMode.Impulse); // Apply force upwards
+            jumpRequest = false; //reset
+            jumpHoldTime = 0f; // reset 
         }
 
         if (doubleJumpRequested)
@@ -325,6 +352,12 @@ public class CharacterMovement : MonoBehaviour
     public void UpdateLivePointsText()
     {
         livePointsText.text = "Lives: " + GameManager.Instance.LivePoints;
+    }
+
+    public void UpdateTimerText()
+    {
+        Text timerText = GameObject.FindWithTag("Timer").GetComponent<Text>();
+        timerText.text = "Time: " + GameManager.Instance.ElapsedTime.ToString() + "s";
     }
 
     public void BoostSpeed()

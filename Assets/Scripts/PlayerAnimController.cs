@@ -23,9 +23,14 @@ public class PlayerAnimController : MonoBehaviour
         animator.SetFloat("CharacterSpeed", rb.linearVelocity.magnitude);
         animator.SetBool("IsGrounded", movement.IsGrounded);
        
-        if (Input.GetKeyDown(KeyCode.Space))
+        if (Input.GetButtonDown("Jump") && movement.IsGrounded)
         {
-            animator.SetTrigger("jump");
+            animator.SetTrigger("Jump");
+        }
+
+        if (Input.GetButtonDown("Jump") && !movement.IsGrounded && movement.IsJumpBoosted)
+        {
+            animator.SetTrigger("Flip"); 
         }
     }
 }
