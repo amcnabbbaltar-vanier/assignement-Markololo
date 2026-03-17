@@ -283,6 +283,10 @@ public class CharacterMovement : MonoBehaviour
         // } this is now in levels manager script
         if (other.gameObject.CompareTag("DeathPlane"))
         {
+            // scoreText.text = "Score: 0";
+            // livePointsText.text = "Lives: 0";
+            GameManager.Instance.LivePoints = 3; 
+            GameManager.Instance.Score = 0;
             GameManager.Instance.ResetGame(); 
         }
 
